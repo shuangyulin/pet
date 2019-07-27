@@ -1,0 +1,50 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.AdoptMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加领养记录 -->
+	<insert id="addAdopt" parameterType="adopt">
+		insert into t_adopt(petObj,userObj,addTime,shenHe) values 
+		(#{petObj.petId},#{userObj.user_name},#{addTime},#{shenHe})
+	</insert>
+
+	<!-- 按照查询条件分页查询领养记录 -->
+	<select id="queryAdopt" resultMap="adoptMap" >
+		select t_adopt.* from t_adopt,t_pet,t_userInfo ${where} and t_adopt.petObj = t_pet.petId and t_adopt.userObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="adoptMap" type="adopt">
+        <id property="adoptId" column="adoptId" />
+        <association property="petObj" column="petObj" select="com.chengxusheji.mapper.PetMapper.getPet" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有领养记录 -->
+	<select id="queryAdoptList" resultMap="adoptMap" >
+		select t_adopt.* from t_adopt,t_pet,t_userInfo ${where} and t_adopt.petObj = t_pet.petId and t_adopt.userObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的领养记录数 -->
+	<select id="queryAdoptCount" resultType="int">
+		select count(*) from t_adopt,t_pet,t_userInfo ${where} and t_adopt.petObj = t_pet.petId and t_adopt.userObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个领养记录 -->
+	<select id="getAdopt" parameterType="int" resultMap="adoptMap">
+		select * from t_adopt where t_adopt.adoptId = #{adoptId}
+	</select>
+
+	<!-- 更新领养记录 -->
+	<update id="updateAdopt" parameterType="adopt">
+		update t_adopt set petObj=#{petObj.petId},userObj=#{userObj.user_name},addTime=#{addTime},shenHe=#{shenHe} where adoptId = #{adoptId}
+	</update>
+
+	<!-- 删除领养记录 -->
+	<delete id="deleteAdopt" parameterType="int">
+		delete from t_adopt where adoptId=#{adoptId}
+	</delete>
+
+</mapper>

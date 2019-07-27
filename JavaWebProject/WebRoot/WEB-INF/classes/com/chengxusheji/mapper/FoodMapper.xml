@@ -1,0 +1,48 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.FoodMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加宠物粮食记录 -->
+	<insert id="addFood" parameterType="food">
+		insert into t_food(foodName,foodPhoto,foodDesc,foodNum,addDate) values 
+		(#{foodName},#{foodPhoto},#{foodDesc},#{foodNum},#{addDate})
+	</insert>
+
+	<!-- 按照查询条件分页查询宠物粮食记录 -->
+	<select id="queryFood" resultMap="foodMap" >
+		select t_food.* from t_food ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="foodMap" type="food">
+        <id property="foodId" column="foodId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有宠物粮食记录 -->
+	<select id="queryFoodList" resultMap="foodMap" >
+		select t_food.* from t_food ${where}
+	</select>
+
+    <!-- 按照查询条件的宠物粮食记录数 -->
+	<select id="queryFoodCount" resultType="int">
+		select count(*) from t_food ${where}
+	</select>
+
+	<!-- 根据主键查询某个宠物粮食记录 -->
+	<select id="getFood" parameterType="int" resultMap="foodMap">
+		select * from t_food where t_food.foodId = #{foodId}
+	</select>
+
+	<!-- 更新宠物粮食记录 -->
+	<update id="updateFood" parameterType="food">
+		update t_food set foodName=#{foodName},foodPhoto=#{foodPhoto},foodDesc=#{foodDesc},foodNum=#{foodNum},addDate=#{addDate} where foodId = #{foodId}
+	</update>
+
+	<!-- 删除宠物粮食记录 -->
+	<delete id="deleteFood" parameterType="int">
+		delete from t_food where foodId=#{foodId}
+	</delete>
+
+</mapper>
