@@ -1,0 +1,50 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.FoodOrderMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加宠粮订单记录 -->
+	<insert id="addFoodOrder" parameterType="foodOrder">
+		insert into t_foodOrder(foodObj,userObj,orderNumber,orderState,orderTime) values 
+		(#{foodObj.foodId},#{userObj.user_name},#{orderNumber},#{orderState},#{orderTime})
+	</insert>
+
+	<!-- 按照查询条件分页查询宠粮订单记录 -->
+	<select id="queryFoodOrder" resultMap="foodOrderMap" >
+		select t_foodOrder.* from t_foodOrder,t_food,t_userInfo ${where} and t_foodOrder.foodObj = t_food.foodId and t_foodOrder.userObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="foodOrderMap" type="foodOrder">
+        <id property="orderId" column="orderId" />
+        <association property="foodObj" column="foodObj" select="com.chengxusheji.mapper.FoodMapper.getFood" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有宠粮订单记录 -->
+	<select id="queryFoodOrderList" resultMap="foodOrderMap" >
+		select t_foodOrder.* from t_foodOrder,t_food,t_userInfo ${where} and t_foodOrder.foodObj = t_food.foodId and t_foodOrder.userObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的宠粮订单记录数 -->
+	<select id="queryFoodOrderCount" resultType="int">
+		select count(*) from t_foodOrder,t_food,t_userInfo ${where} and t_foodOrder.foodObj = t_food.foodId and t_foodOrder.userObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个宠粮订单记录 -->
+	<select id="getFoodOrder" parameterType="int" resultMap="foodOrderMap">
+		select * from t_foodOrder where t_foodOrder.orderId = #{orderId}
+	</select>
+
+	<!-- 更新宠粮订单记录 -->
+	<update id="updateFoodOrder" parameterType="foodOrder">
+		update t_foodOrder set foodObj=#{foodObj.foodId},userObj=#{userObj.user_name},orderNumber=#{orderNumber},orderState=#{orderState},orderTime=#{orderTime} where orderId = #{orderId}
+	</update>
+
+	<!-- 删除宠粮订单记录 -->
+	<delete id="deleteFoodOrder" parameterType="int">
+		delete from t_foodOrder where orderId=#{orderId}
+	</delete>
+
+</mapper>
